@@ -84,8 +84,16 @@ fi
 
 echo "✅ Container ready!"
 
+# === COMMAND EXECUTION DEBUG ===
+echo "🐛 DEBUG: Number of arguments: $#"
+echo "🐛 DEBUG: All arguments: $*"
+echo "🐛 DEBUG: User ID: $(id -u)"
+echo "🐛 DEBUG: Working directory: $(pwd)"
+echo "🐛 DEBUG: PATH: $PATH"
+
 # Execute provided command or fall back to a long-lived process
 if [ "$#" -gt 0 ]; then
+  echo "🚀 Executing command: $*"
   exec "$@"
 else
   echo "ℹ️ No command provided; sleeping to keep container alive."
