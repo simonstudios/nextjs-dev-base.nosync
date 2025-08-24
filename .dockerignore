@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+README.md
+
+# Node.js
+node_modules
+npm-debug.log*
+
+# Environment files
+.env*
+
+# IDE
+.vscode
+.idea
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Build artifacts
+dist
+build
+.next
+
+# Testing
+coverage
+.nyc_output

@@ -1,0 +1,71 @@
+# =============================================================================
+# NEXT.JS DEVELOPMENT BASE IMAGE - .gitignore
+# =============================================================================
+
+# === BUILD ARTIFACTS ===
+*.log
+*.pid
+*.seed
+*.pid.lock
+.npm
+.node_repl_history
+node_modules/
+
+# === DOCKER ARTIFACTS ===
+.docker/
+docker-compose.override.yml
+docker-compose.local.yml
+
+# === DEVELOPMENT FILES ===
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.*.local
+
+# === IDE/EDITOR FILES ===
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
+*~
+
+# === SYSTEM FILES ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# === TESTING ===
+coverage/
+.nyc_output/
+.coverage
+htmlcov/
+
+# === TEMPORARY FILES ===
+tmp/
+temp/
+*.tmp
+*.temp
+
+# === CI/CD ARTIFACTS ===
+.github/workflows/*.env
+
+# === SECRETS AND KEYS ===
+*.pem
+*.key
+*.crt
+secrets/
+.secrets/
+
+# Keep important files
+!README.md
+!Dockerfile
+!docker-entrypoint.sh
+!VERSION
+!.github/workflows/

@@ -1,0 +1,29 @@
+# =============================================================================
+# TRUPIN WEB APP - PROJECT-SPECIFIC DOCKERFILE  
+# =============================================================================
+# Uses the Trupin Node.js development base image
+# Only contains project-specific setup
+
+FROM ghcr.io/yourusername/trupin-node-dev-base:latest
+
+# Optional: allow skipping Puppeteer Chromium download to reduce install time
+ARG PUPPETEER_SKIP_DOWNLOAD=false
+ENV PUPPETEER_SKIP_DOWNLOAD=${PUPPETEER_SKIP_DOWNLOAD}
+
+# Copy package files for optimal layer caching
+COPY --chown=node:node package*.json ./
+
+# Switch to node user for dependency installation
+USER node
+
+# Install project dependencies
+RUN npm ci --legacy-peer-deps --no-fund --no-audit && npm cache clean --force
+
+# The base image handles:
+# - CLI tools installation (Vercel, Claude Code, Codex)
+# - Volume permission management  
+# - PATH setup
+# - Port exposure (3000, 1455)
+# - Entrypoint script
+
+# Default command inherited from base: ["npm", "run", "dev"]
