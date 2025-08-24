@@ -55,13 +55,12 @@ EXPOSE 3000 1455
 # Copy entrypoint script as node user
 COPY --chown=node:node docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
-# Switch back to root only to make entrypoint executable
+# Switch back to root to make entrypoint executable and set final runtime user
 USER root
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Switch back to node for runtime
-USER node
-
 # === CONTAINER STARTUP ===
+# Run as root initially so entrypoint can handle permissions properly
+USER root
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["sleep", "infinity"]
