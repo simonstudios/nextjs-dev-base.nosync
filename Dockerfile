@@ -19,9 +19,13 @@ ARG DEBIAN_FRONTEND=noninteractive
 # === SYSTEM DEPENDENCIES ===
 # Install essential system packages in single layer for optimal caching
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    bash curl git ca-certificates gosu coreutils \
+    bash curl git ca-certificates gosu coreutils sudo zsh \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
+
+# Allow passwordless sudo for the node user (Codespaces/devcontainers friendly)
+RUN echo 'node ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/node \
+    && chmod 0440 /etc/sudoers.d/node
 
 # === SETUP DIRECTORIES AND PERMISSIONS ===
 # Create necessary directories and set permissions in one layer

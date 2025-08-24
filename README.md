@@ -12,6 +12,7 @@ A production-ready Next.js development base image optimized for VS Code devconta
 - **Volume permission management** for seamless file sharing
 - **Optimized for devcontainers** and Codespaces
 - **Multi-architecture support** (AMD64, ARM64)
+- **zsh + passwordless sudo** for the `node` user (Codespaces-friendly)
 
 ## 📦 Available Tags
 
