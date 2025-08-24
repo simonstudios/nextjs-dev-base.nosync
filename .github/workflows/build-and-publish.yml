@@ -1,11 +1,14 @@
 name: Build and Publish Base Image
 
+# Trigger strategy:
+# - PR validation: Build and test on pull requests to ensure quality
+# - Release publishing: Build and publish only on version tags (v*)
+# This avoids unnecessary builds on every main branch push while maintaining quality control
 on:
-  push:
-    branches: [ main ]
-    tags: [ 'v*' ]
   pull_request:
     branches: [ main ]
+  push:
+    tags: [ 'v*' ]
 
 env:
   REGISTRY: ghcr.io
