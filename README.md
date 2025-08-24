@@ -15,6 +15,12 @@ A production-ready Next.js development base image optimized for VS Code devconta
 - **zsh + passwordless sudo** for the `node` user (Codespaces-friendly)
 - **Preinstalled CLIs**: `vercel`, `claude`, `codex` available on PATH
 
+### Privilege Model
+- Runs as non-root (`node`) for day-to-day tasks.
+- Installs `sudo` for optional escalation. Passwordless sudo is disabled/enabled at runtime by the entrypoint based on `ENABLE_PASSWORDLESS_SUDO` (default: `1`).
+- To disable passwordless sudo in a project:
+  - Add to devcontainer.json: `"containerEnv": { "ENABLE_PASSWORDLESS_SUDO": "0" }`.
+
 ## 📦 Available Tags
 
 - `ghcr.io/yourusername/nextjs-dev-base:latest` - Latest stable

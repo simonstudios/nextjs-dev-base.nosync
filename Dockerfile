@@ -23,10 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get clean
 
-# Allow passwordless sudo for the node user (Codespaces/devcontainers friendly)
-RUN echo 'node ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/node \
-    && chmod 0440 /etc/sudoers.d/node
-
 # === SETUP DIRECTORIES AND PERMISSIONS ===
 # Create necessary directories and set permissions in one layer
 RUN mkdir -p /home/node/.npm-global /app \

@@ -30,6 +30,14 @@ ensure_dirs
 
 # If running as root, fix permissions on mounted volumes, then re-exec as node
 if [ "$(id -u)" = "0" ]; then
+  # Optionally enable passwordless sudo for node (default: enabled). Set ENABLE_PASSWORDLESS_SUDO=0 to disable.
+  if [ "${ENABLE_PASSWORDLESS_SUDO:-1}" = "1" ]; then
+    echo 'node ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/node
+    chmod 0440 /etc/sudoers.d/node
+  else
+    rm -f /etc/sudoers.d/node || true
+  fi
+
   echo "🔧 Ensuring volume permissions for node user..."
   chown -R node:node /home/node/.npm-global /home/node/.vercel /home/node/.codex /home/node/.config /home/node/.cache || true
   # Re-run this script as node to avoid root-owned files on installs
@@ -47,31 +55,7 @@ for rc in "/home/node/.zshrc" "/home/node/.bashrc" "/home/node/.profile" "/home/
   fi
 done
 
-# === CLI TOOLS INSTALLATION ===
-# Install development CLI tools at runtime (non-critical)
-# Persist a marker in npm-global to avoid reinstalling on every startup
-if [ -z "${SKIP_CLI_INSTALL:-}" ]; then
-  if [ ! -f /home/node/.npm-global/.cli-tools-installed ] || ! command -v vercel >/dev/null 2>&1 || ! command -v codex >/dev/null 2>&1; then
-    echo "🛠️ Installing CLI tools (first run or missing)..."
-    
-    # Allow version overrides via environment variables
-    VERCEL_CLI_VERSION=${VERCEL_CLI_VERSION:-latest}
-    CLAUDE_CODE_VERSION=${CLAUDE_CODE_VERSION:-latest}
-    CODEX_CLI_VERSION=${CODEX_CLI_VERSION:-latest}
-    
-    if npm install -g \
-      "vercel@${VERCEL_CLI_VERSION}" \
-      "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
-      "@openai/codex@${CODEX_CLI_VERSION}" 2>/dev/null; then
-      touch /home/node/.npm-global/.cli-tools-installed
-      echo "✅ CLI tools installed"
-    else
-      echo "⚠️ CLI tools installation failed (non-critical)"
-    fi
-  else
-    echo "✅ CLI tools already available"
-  fi
-fi
+# CLI tools are preinstalled at image build time; no runtime install
 
 # === RUNTIME CONFIGURATION ===
 # Copy project-specific configs if available
@@ -83,13 +67,6 @@ if [ -f /app/.devcontainer/codex/config.toml ] && [ ! -f /home/node/.codex/confi
 fi
 
 echo "✅ Container ready!"
-
-# === COMMAND EXECUTION DEBUG ===
-echo "🐛 DEBUG: Number of arguments: $#"
-echo "🐛 DEBUG: All arguments: $*"
-echo "🐛 DEBUG: User ID: $(id -u)"
-echo "🐛 DEBUG: Working directory: $(pwd)"
-echo "🐛 DEBUG: PATH: $PATH"
 
 # Execute provided command or fall back to a long-lived process
 if [ "$#" -gt 0 ]; then
