@@ -54,3 +54,4 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # === CONTAINER STARTUP ===
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["sleep", "infinity"]
