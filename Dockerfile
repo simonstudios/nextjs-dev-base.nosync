@@ -45,6 +45,13 @@ RUN npm config set prefix /home/node/.npm-global \
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global \
     PATH=/home/node/.npm-global/bin:$PATH
 
+# Pre-install core CLI tools so they are always available
+RUN npm install -g \
+      vercel \
+      @anthropic-ai/claude-code \
+      @openai/codex \
+    && touch /home/node/.npm-global/.cli-tools-installed
+
 # === PORT EXPOSURE ===
 # Common development ports
 EXPOSE 3000 1455

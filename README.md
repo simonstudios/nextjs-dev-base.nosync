@@ -13,6 +13,7 @@ A production-ready Next.js development base image optimized for VS Code devconta
 - **Optimized for devcontainers** and Codespaces
 - **Multi-architecture support** (AMD64, ARM64)
 - **zsh + passwordless sudo** for the `node` user (Codespaces-friendly)
+- **Preinstalled CLIs**: `vercel`, `claude`, `codex` available on PATH
 
 ## 📦 Available Tags
 
