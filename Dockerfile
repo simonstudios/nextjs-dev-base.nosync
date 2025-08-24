@@ -54,4 +54,3 @@ RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # === CONTAINER STARTUP ===
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
-CMD ["npm", "run", "dev"]
