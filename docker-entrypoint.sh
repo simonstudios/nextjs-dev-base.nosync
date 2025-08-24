@@ -17,6 +17,7 @@ echo "🐳 Trupin Node.js development container starting..."
 # Ensure important directories exist
 ensure_dirs() {
   for d in \
+    /app \
     /home/node/.npm-global \
     /home/node/.vercel \
     /home/node/.codex \
@@ -39,7 +40,7 @@ if [ "$(id -u)" = "0" ]; then
   fi
 
   echo "🔧 Ensuring volume permissions for node user..."
-  chown -R node:node /home/node/.npm-global /home/node/.vercel /home/node/.codex /home/node/.config /home/node/.cache || true
+  chown -R node:node /app /home/node/.npm-global /home/node/.vercel /home/node/.codex /home/node/.config /home/node/.cache || true
   # Re-run this script as node to avoid root-owned files on installs
   exec gosu node /usr/local/bin/docker-entrypoint.sh "$@"
 fi
