@@ -12,7 +12,6 @@ FROM node:22-bookworm-slim AS development
 LABEL org.opencontainers.image.title="Next.js Dev Base"
 LABEL org.opencontainers.image.description="Next.js development base image with CLI tools"
 LABEL org.opencontainers.image.vendor="Next.js Dev Base"
-LABEL org.opencontainers.image.source="https://github.com/YOUR_GITHUB_USERNAME/YOUR_REPO_NAME"
 
 # Disable interactive prompts during build
 ARG DEBIAN_FRONTEND=noninteractive
