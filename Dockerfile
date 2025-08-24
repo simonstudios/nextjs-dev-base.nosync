@@ -52,6 +52,9 @@ COPY --chown=node:node docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 USER root
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Switch back to node for runtime
+USER node
+
 # === CONTAINER STARTUP ===
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["sleep", "infinity"]
