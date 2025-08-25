@@ -21,6 +21,9 @@ ARG SKIP_CLI_INSTALL=false
 ARG VERCEL_CLI_VERSION=latest
 ARG CLAUDE_CODE_VERSION=latest
 ARG CODEX_CLI_VERSION=latest
+# Optional MCP helper versions
+ARG MCP_REMOTE_VERSION=latest
+ARG MONGODB_MCP_SERVER_VERSION=latest
 
 # === SYSTEM DEPENDENCIES ===
 # Install essential system packages in single layer for optimal caching
@@ -52,7 +55,9 @@ RUN if [ "${SKIP_CLI_INSTALL}" != "true" ]; then \
       npm install -g \
         "vercel@${VERCEL_CLI_VERSION}" \
         "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
-        "@openai/codex@${CODEX_CLI_VERSION}"; \
+        "@openai/codex@${CODEX_CLI_VERSION}" \
+        "mcp-remote@${MCP_REMOTE_VERSION}" \
+        "mongodb-mcp-server@${MONGODB_MCP_SERVER_VERSION}"; \
     else \
       echo "Skipping CLI tool installation"; \
     fi \

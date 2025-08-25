@@ -9,6 +9,7 @@ A production-ready Next.js development base image optimized for VS Code devconta
   - Vercel CLI
   - Claude Code
   - OpenAI Codex
+  - MCP helpers: `mcp-remote`, `mongodb-mcp-server` (for faster first-run)
 - **Volume permission management** for seamless file sharing
 - **Optimized for devcontainers** and Codespaces
 - **Multi-architecture support** (AMD64, ARM64)
@@ -98,6 +99,8 @@ volumes:
 - `VERCEL_CLI_VERSION` (default: `latest`) — Pin Vercel CLI version (e.g., `33.0.0`).
 - `CLAUDE_CODE_VERSION` (default: `latest`) — Pin Claude Code CLI version.
 - `CODEX_CLI_VERSION` (default: `latest`) — Pin Codex CLI version.
+- `MCP_REMOTE_VERSION` (default: `latest`) — Pin mcp-remote helper version.
+- `MONGODB_MCP_SERVER_VERSION` (default: `latest`) — Pin MongoDB MCP server version.
 
 Example:
 
