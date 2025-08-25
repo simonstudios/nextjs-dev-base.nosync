@@ -158,6 +158,113 @@ docker run --rm -it nextjs-dev-base bash
 - ✅ Easy to maintain and update
 - ✅ Smaller project-specific Dockerfiles
 
+## 🧭 New Project Setup (Codespaces + Local)
+
+Bring a new Next.js project online using this base image with secure, repeatable settings.
+
+### 1) Files to add in your project
+
+- `Dockerfile.dev`
+  ```dockerfile
+  FROM ghcr.io/yourusername/nextjs-dev-base:node-22
+
+  ARG PUPPETEER_SKIP_DOWNLOAD=1
+  ENV PUPPETEER_SKIP_DOWNLOAD=${PUPPETEER_SKIP_DOWNLOAD}
+
+  WORKDIR /app
+  COPY --chown=node:node package*.json ./
+  USER node
+  RUN npm ci --legacy-peer-deps --no-fund --no-audit && npm cache clean --force
+  USER root
+  ```
+
+- `docker-compose.yml`
+  ```yaml
+  services:
+    app:
+      build:
+        context: .
+        dockerfile: Dockerfile.dev
+        args:
+          PUPPETEER_SKIP_DOWNLOAD: "1"
+      init: true
+      ports:
+        - "3000:3000"
+        - "1455:1455"
+      environment:
+        NODE_ENV: development
+        HOST: 0.0.0.0
+      volumes:
+        - .:/app
+        - /app/node_modules
+        - ./.devcontainer/data/vercel:/home/node/.vercel
+        - ./.devcontainer/data/codex:/home/node/.codex
+        - ./.devcontainer/data/config:/home/node/.config
+        - ./.devcontainer/data/cache:/home/node/.cache
+  ```
+
+- `.devcontainer/devcontainer.json`
+  ```jsonc
+  {
+    "name": "My App Dev",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/app",
+    "overrideCommand": true,
+    "remoteUser": "node",
+    "forwardPorts": [3000, 1455],
+    "portsAttributes": {
+      "3000": { "label": "Next.js App", "onAutoForward": "notify" },
+      "1455": { "label": "Codex Auth", "onAutoForward": "silent" }
+    },
+    "otherPortsAttributes": { "onAutoForward": "ignore" },
+    "customizations": {
+      "vscode": {
+        "settings": {
+          "typescript.tsdk": "node_modules/typescript/lib",
+          "terminal.integrated.defaultProfile.linux": "zsh"
+        }
+      }
+    },
+    "features": { "ghcr.io/devcontainers/features/github-cli:1": {} }
+  }
+  ```
+
+### 2) Codespaces Secrets
+
+- Global (user/org):
+  - `OPENAI_API_KEY` (Codex/AI tools)
+  - `TAVILY_API_KEY` (optional; Tavily MCP)
+  - `VERCEL_TOKEN` (optional; Vercel MCP)
+- Per-repo:
+  - `MONGODB_URI` (project DB; used by MongoDB MCP)
+  - `CR_PAT` (only if pulling private GHCR images)
+
+Create/refresh your Codespace after adding secrets so they are injected.
+
+### 3) Dotfiles (automatic MCP + Codex setup)
+
+Recommended for “it just works” MCP in every Codespace:
+- Enable a Dotfiles repo in GitHub Settings → Codespaces → Dotfiles.
+- In the dotfiles install script, write remote VS Code settings at `$HOME/.vscode-remote/data/Machine/settings.json`:
+  - `mcp.servers`: MongoDB (stdio using `${env:MONGODB_URI}`), Vercel (http with `Authorization: Bearer ${env:VERCEL_TOKEN}`), Context7 (http), GitHub MCP (http; requires Copilot login in Codespaces).
+  - `claude.mcpServers` (if you use Claude Code): context7 only (no token).
+- Also write Codex config at `~/.codex/config.toml` for context7 and optional Tavily.
+
+### 4) First-time steps inside the container
+
+```bash
+vercel login
+vercel env pull .env.local
+npm run dev
+```
+
+### 5) Troubleshooting tips
+
+- Server Actions in Codespaces: allow `*.app.github.dev` in `next.config.ts` under `experimental.serverActions.allowedOrigins` and optionally `localhost:3000` in dev; set NextAuth `trustHost: true`.
+- Codex OAuth in web Codespaces: prefer `OPENAI_API_KEY` env, or use VS Code Desktop with port 1455 forwarding.
+- Vercel `env pull` overwrites `.env.local`: avoid auto-writing to `.env.local` from scripts.
+
 ## 🏷️ Versioning
 
 This image follows [Semantic Versioning](https://semver.org/):
