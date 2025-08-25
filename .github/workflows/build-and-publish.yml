@@ -68,3 +68,7 @@ jobs:
         run: |
           docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest --version || echo "No --version flag, that's OK"
           docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest node --version
+          # CLIs available and runnable
+          docker run --rm ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest sh -lc 'vercel --version && claude --version && codex --version'
+          # Non-root execution sanity check
+          docker run --rm --user 1000:1000 ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest sh -lc 'node --version && vercel --version'

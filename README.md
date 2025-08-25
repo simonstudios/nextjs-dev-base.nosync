@@ -17,9 +17,9 @@ A production-ready Next.js development base image optimized for VS Code devconta
 
 ### Privilege Model
 - Runs as non-root (`node`) for day-to-day tasks.
-- Installs `sudo` for optional escalation. Passwordless sudo is disabled/enabled at runtime by the entrypoint based on `ENABLE_PASSWORDLESS_SUDO` (default: `1`).
-- To disable passwordless sudo in a project:
-  - Add to devcontainer.json: `"containerEnv": { "ENABLE_PASSWORDLESS_SUDO": "0" }`.
+- Installs `sudo` for optional escalation. Passwordless sudo is disabled by default; enable by setting `ENABLE_PASSWORDLESS_SUDO=1` (e.g., via devcontainer `containerEnv`).
+- To enable passwordless sudo in a project:
+  - Add to devcontainer.json: `"containerEnv": { "ENABLE_PASSWORDLESS_SUDO": "1" }`.
 
 ## 📦 Available Tags
 
@@ -43,7 +43,7 @@ RUN npm ci --legacy-peer-deps
 # Copy project files (if needed at build time)
 # COPY . .
 
-# Default command (inherited from base: npm run dev)
+# Default: base image keeps container alive; run your dev command in compose/devcontainer
 ```
 
 ### Docker Compose
@@ -92,12 +92,23 @@ volumes:
 
 ## ⚙️ Configuration
 
-### Environment Variables
+### Build Args (image build-time)
 
-- `SKIP_CLI_INSTALL=true` - Skip CLI tools installation
-- `VERCEL_CLI_VERSION=latest` - Specify Vercel CLI version
-- `CLAUDE_CODE_VERSION=latest` - Specify Claude Code version  
-- `CODEX_CLI_VERSION=latest` - Specify Codex CLI version
+- `SKIP_CLI_INSTALL` (default: `false`) — Skip installing CLIs during build when set to `true`.
+- `VERCEL_CLI_VERSION` (default: `latest`) — Pin Vercel CLI version (e.g., `33.0.0`).
+- `CLAUDE_CODE_VERSION` (default: `latest`) — Pin Claude Code CLI version.
+- `CODEX_CLI_VERSION` (default: `latest`) — Pin Codex CLI version.
+
+Example:
+
+```bash
+docker build \
+  --build-arg SKIP_CLI_INSTALL=false \
+  --build-arg VERCEL_CLI_VERSION=latest \
+  --build-arg CLAUDE_CODE_VERSION=latest \
+  --build-arg CODEX_CLI_VERSION=latest \
+  -t nextjs-dev-base .
+```
 
 ### Volume Mounts
 
@@ -108,6 +119,8 @@ The image expects these volumes for persistence:
 - `/home/node/.codex` - Codex configuration
 - `/home/node/.config` - General CLI configs
 - `/home/node/.cache` - CLI caches
+  
+Note: Some projects may bind-mount these from a workspace-managed folder (e.g., `.devcontainer/data/*`).
 
 ## 🔧 Development
 

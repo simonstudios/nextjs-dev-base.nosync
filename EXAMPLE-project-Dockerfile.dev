@@ -1,10 +1,10 @@
 # =============================================================================
 # TRUPIN WEB APP - PROJECT-SPECIFIC DOCKERFILE  
 # =============================================================================
-# Uses the Trupin Node.js development base image
+# Uses the Next.js development base image
 # Only contains project-specific setup
 
-FROM ghcr.io/yourusername/trupin-node-dev-base:latest
+FROM ghcr.io/yourusername/nextjs-dev-base:latest
 
 # Optional: allow skipping Puppeteer Chromium download to reduce install time
 ARG PUPPETEER_SKIP_DOWNLOAD=false
@@ -24,6 +24,6 @@ RUN npm ci --legacy-peer-deps --no-fund --no-audit && npm cache clean --force
 # - Volume permission management  
 # - PATH setup
 # - Port exposure (3000, 1455)
-# - Entrypoint script
+# - Entrypoint script keeping the container alive
 
-# Default command inherited from base: ["npm", "run", "dev"]
+# Start your dev server via compose/devcontainer task or `npm run dev`

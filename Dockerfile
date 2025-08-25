@@ -16,6 +16,12 @@ LABEL org.opencontainers.image.vendor="Next.js Dev Base"
 # Disable interactive prompts during build
 ARG DEBIAN_FRONTEND=noninteractive
 
+# Build-time configuration for CLI installation and version pinning
+ARG SKIP_CLI_INSTALL=false
+ARG VERCEL_CLI_VERSION=latest
+ARG CLAUDE_CODE_VERSION=latest
+ARG CODEX_CLI_VERSION=latest
+
 # === SYSTEM DEPENDENCIES ===
 # Install essential system packages in single layer for optimal caching
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -42,10 +48,14 @@ ENV NPM_CONFIG_PREFIX=/home/node/.npm-global \
     PATH=/home/node/.npm-global/bin:$PATH
 
 # Pre-install core CLI tools so they are always available
-RUN npm install -g \
-      vercel \
-      @anthropic-ai/claude-code \
-      @openai/codex \
+RUN if [ "${SKIP_CLI_INSTALL}" != "true" ]; then \
+      npm install -g \
+        "vercel@${VERCEL_CLI_VERSION}" \
+        "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \
+        "@openai/codex@${CODEX_CLI_VERSION}"; \
+    else \
+      echo "Skipping CLI tool installation"; \
+    fi \
     && touch /home/node/.npm-global/.cli-tools-installed
 
 # === PORT EXPOSURE ===
