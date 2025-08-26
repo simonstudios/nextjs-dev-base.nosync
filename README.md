@@ -266,6 +266,12 @@ What it does (idempotent):
   - Adds `tavily` if `TAVILY_API_KEY` is present
 - Vercel CLI:
   - If `VERCEL_TOKEN` is set, creates `~/.vercel/auth.json` to avoid login prompts
+- VS Code MCP (workspace scope):
+  - Creates `.vscode/mcp.json` if missing with:
+    - `mongodb` (stdio, no URI so Copilot prompts for it)
+    - `context7` (HTTP)
+    - `github` (HTTP)
+  - File is only created if absent; existing configs are not overwritten
 
 MongoDB MCP is not set for CLI (URIs vary by repo). If needed for a project, use a project `.mcp.json` in that repo.
 

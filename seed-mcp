@@ -50,3 +50,33 @@ if [ -n "${VERCEL_TOKEN:-}" ]; then
 fi
 
 echo "seed-mcp: Codex/Claude MCP ensured (context7; tavily if key). Vercel auth seeded if VERCEL_TOKEN present."
+
+# --- VS Code MCP (workspace scope) ---
+# Create a minimal .vscode/mcp.json in the current workspace if it doesn't exist yet.
+# This makes MongoDB (stdio, prompts for URI), context7, and GitHub MCP available in VS Code Copilot.
+WS_DIR="${WORKSPACE_FOLDER:-$PWD}"
+if [ -d "$WS_DIR" ]; then
+  mkdir -p "$WS_DIR/.vscode"
+  if [ ! -f "$WS_DIR/.vscode/mcp.json" ]; then
+    cat > "$WS_DIR/.vscode/mcp.json" <<'JSON'
+{
+  "servers": {
+    "mongodb": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "mongodb-mcp-server"]
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp"
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}
+JSON
+    echo "seed-mcp: Wrote workspace .vscode/mcp.json (mongodb/context7/github)."
+  fi
+fi
