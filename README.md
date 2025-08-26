@@ -254,6 +254,13 @@ Recommended for “it just works” MCP in every Codespace:
   - `claude.mcpServers` (if you use Claude Code): context7 only (no token).
 - Also write Codex config at `~/.codex/config.toml` for context7 and optional Tavily.
 
+#### Notes on VS Code MCP
+- In web Codespaces, VS Code MCP has limitations (CORS/stdio). Prefer Codex/Claude CLI MCP in Codespaces, or use VS Code Desktop to connect to the Codespace if you need MCP tools inside VS Code.
+
+#### Speed-ups
+- Base image preinstalls MCP helpers: `mcp-remote`, `mongodb-mcp-server`.
+- Dotfiles can also warm up the npx cache to reduce first-run latency.
+
 ### 4) First-time steps inside the container
 
 ```bash
