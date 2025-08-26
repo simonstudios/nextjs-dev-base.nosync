@@ -74,6 +74,10 @@ COPY --chown=node:node docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 USER root
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
+# Seed script to ensure user-scope MCP config for Codex/Claude is present in every Codespace
+COPY --chown=root:root seed-mcp /usr/local/bin/seed-mcp
+RUN chmod +x /usr/local/bin/seed-mcp
+
 # === CONTAINER STARTUP ===
 # Run as root initially so entrypoint can handle permissions properly
 USER root

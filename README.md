@@ -245,21 +245,35 @@ Bring a new Next.js project online using this base image with secure, repeatable
 
 Create/refresh your Codespace after adding secrets so they are injected.
 
-### 3) Dotfiles (automatic MCP + Codex setup)
+### 3) Bootstrap MCP (no dotfiles required)
 
-Recommended for “it just works” MCP in every Codespace:
-- Enable a Dotfiles repo in GitHub Settings → Codespaces → Dotfiles.
-- In the dotfiles install script, write remote VS Code settings at `$HOME/.vscode-remote/data/Machine/settings.json`:
-  - `mcp.servers`: MongoDB (stdio using `${env:MONGODB_URI}`), Vercel (http with `Authorization: Bearer ${env:VERCEL_TOKEN}`), Context7 (http), GitHub MCP (http; requires Copilot login in Codespaces).
-  - `claude.mcpServers` (if you use Claude Code): context7 only (no token).
-- Also write Codex config at `~/.codex/config.toml` for context7 and optional Tavily.
+To ensure Codex/Claude MCP always works across repos, the base image ships a small bootstrap that seeds user‑scope MCP entries after the container is up.
+
+- In your repo’s `.devcontainer/devcontainer.json` add:
+  ```jsonc
+  {
+    // ...
+    "postCreateCommand": "/usr/local/bin/seed-mcp"
+  }
+  ```
+
+What it does (idempotent):
+- Codex `~/.codex/config.toml`:
+  - Adds `context7` always
+  - Adds `tavily` only if `TAVILY_API_KEY` is present
+- Claude CLI user scope:
+  - Adds `context7` if missing
+  - Adds `tavily` if `TAVILY_API_KEY` is present
+- Vercel CLI:
+  - If `VERCEL_TOKEN` is set, creates `~/.vercel/auth.json` to avoid login prompts
+
+MongoDB MCP is not set for CLI (URIs vary by repo). If needed for a project, use a project `.mcp.json` in that repo.
 
 #### Notes on VS Code MCP
 - In web Codespaces, VS Code MCP has limitations (CORS/stdio). Prefer Codex/Claude CLI MCP in Codespaces, or use VS Code Desktop to connect to the Codespace if you need MCP tools inside VS Code.
 
 #### Speed-ups
-- Base image preinstalls MCP helpers: `mcp-remote`, `mongodb-mcp-server`.
-- Dotfiles can also warm up the npx cache to reduce first-run latency.
+- Base image preinstalls MCP helpers: `mcp-remote` (and `mongodb-mcp-server` for VS Code use later).
 
 ### 4) First-time steps inside the container
 

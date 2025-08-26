@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Idempotently seed user-scope MCP config for Codex and Claude CLI.
+# - Adds context7 for both tools
+# - Adds Tavily only if TAVILY_API_KEY is present
+
+# --- Codex (TOML) ---
+CODEx_DIR="$HOME/.codex"
+CODEx_CFG="$CODEx_DIR/config.toml"
+mkdir -p "$CODEx_DIR"
+touch "$CODEx_CFG"
+
+# Ensure context7 block exists
+if ! grep -q '^\[mcp_servers\.context7\]' "$CODEx_CFG" 2>/dev/null; then
+  cat >>"$CODEx_CFG" <<'EOF'
+# Seeded by seed-mcp
+model = "gpt-5"
+model_reasoning_effort = "high"
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "mcp-remote", "https://mcp.context7.com/mcp"]
+EOF
+fi
+
+# Ensure tavily block exists only if key is present
+if [ -n "${TAVILY_API_KEY:-}" ] && ! grep -q '^\[mcp_servers\.tavily\]' "$CODEx_CFG" 2>/dev/null; then
+  cat >>"$CODEx_CFG" <<'EOF'
+[mcp_servers.tavily]
+command = "npx"
+args = ["-y", "mcp-remote", "https://mcp.tavily.com/mcp/?tavilyApiKey=$TAVILY_API_KEY"]
+EOF
+fi
+
+# --- Claude CLI (user scope via CLI) ---
+if command -v claude >/dev/null 2>&1; then
+  claude mcp get context7 >/dev/null 2>&1 || claude mcp add context7 --scope user -- npx -y mcp-remote https://mcp.context7.com/mcp || true
+  if [ -n "${TAVILY_API_KEY:-}" ]; then
+    claude mcp get tavily >/dev/null 2>&1 || claude mcp add tavily --scope user -- npx -y mcp-remote "https://mcp.tavily.com/mcp/?tavilyApiKey=$TAVILY_API_KEY" || true
+  fi
+fi
+
+# --- Vercel CLI auth (optional) ---
+if [ -n "${VERCEL_TOKEN:-}" ]; then
+  mkdir -p "$HOME/.vercel"
+  if [ ! -f "$HOME/.vercel/auth.json" ]; then
+    printf '{"token":"%s"}\n' "$VERCEL_TOKEN" > "$HOME/.vercel/auth.json" || true
+  fi
+fi
+
+echo "seed-mcp: Codex/Claude MCP ensured (context7; tavily if key). Vercel auth seeded if VERCEL_TOKEN present."
