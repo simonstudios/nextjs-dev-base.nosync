@@ -229,7 +229,8 @@ Bring a new Next.js project online using this base image with secure, repeatable
         }
       }
     },
-    "features": { "ghcr.io/devcontainers/features/github-cli:1": {} }
+    "features": { "ghcr.io/devcontainers/features/github-cli:1": {} },
+    "postCreateCommand": "/usr/local/bin/seed-mcp"
   }
   ```
 
