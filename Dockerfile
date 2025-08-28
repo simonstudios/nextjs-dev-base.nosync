@@ -21,6 +21,8 @@ ARG SKIP_CLI_INSTALL=false
 ARG VERCEL_CLI_VERSION=latest
 ARG CLAUDE_CODE_VERSION=latest
 ARG CODEX_CLI_VERSION=latest
+# Cache-busting key to force fresh CLI install when desired
+ARG CLI_REFRESH=static
 # Optional MCP helper versions
 ARG MCP_REMOTE_VERSION=latest
 ARG MONGODB_MCP_SERVER_VERSION=latest
@@ -51,7 +53,8 @@ ENV NPM_CONFIG_PREFIX=/home/node/.npm-global \
     PATH=/home/node/.npm-global/bin:$PATH
 
 # Pre-install core CLI tools so they are always available
-RUN if [ "${SKIP_CLI_INSTALL}" != "true" ]; then \
+RUN echo "CLI refresh key: ${CLI_REFRESH}" >/dev/null \
+    && if [ "${SKIP_CLI_INSTALL}" != "true" ]; then \
       npm install -g \
         "vercel@${VERCEL_CLI_VERSION}" \
         "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}" \

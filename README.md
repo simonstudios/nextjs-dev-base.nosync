@@ -77,7 +77,7 @@ volumes:
 
 ### VS Code devcontainer.json
 
-```json
+```jsonc
 {
   "name": "My Next.js App",
   "dockerComposeFile": "docker-compose.yml",
@@ -87,6 +87,14 @@ volumes:
   "forwardPorts": [3000, 1455],
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        // Ensure the Codex VS Code extension auto-installs in the container
+        // Replace with the exact extension identifier once confirmed, e.g. "openai.codex"
+      ]
+    }
   }
 }
 ```
@@ -226,7 +234,11 @@ Bring a new Next.js project online using this base image with secure, repeatable
         "settings": {
           "typescript.tsdk": "node_modules/typescript/lib",
           "terminal.integrated.defaultProfile.linux": "zsh"
-        }
+        },
+        "extensions": [
+          // Ensure the Codex VS Code extension auto-installs in the container
+          // Replace with the exact extension identifier once confirmed, e.g. "openai.codex"
+        ]
       }
     },
     "features": { "ghcr.io/devcontainers/features/github-cli:1": {} },
@@ -238,7 +250,6 @@ Bring a new Next.js project online using this base image with secure, repeatable
 
 - Global (user/org):
   - `OPENAI_API_KEY` (Codex/AI tools)
-  - `TAVILY_API_KEY` (optional; Tavily MCP)
   - `VERCEL_TOKEN` (optional; Vercel MCP)
 - Per-repo:
   - `MONGODB_URI` (project DB; used by MongoDB MCP)
@@ -261,10 +272,8 @@ To ensure Codex/Claude MCP always works across repos, the base image ships a sma
 What it does (idempotent):
 - Codex `~/.codex/config.toml`:
   - Adds `context7` always
-  - Adds `tavily` only if `TAVILY_API_KEY` is present
 - Claude CLI user scope:
   - Adds `context7` if missing
-  - Adds `tavily` if `TAVILY_API_KEY` is present
 - Vercel CLI:
   - If `VERCEL_TOKEN` is set, creates `~/.vercel/auth.json` to avoid login prompts
 - VS Code MCP (workspace scope):
